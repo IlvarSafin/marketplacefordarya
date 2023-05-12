@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
-public class UserContoller {
+public class UserController {
     private final ProductRepository productRepository;
     private final ClientRepository clientRepository;
     private final ClientService clientService;
@@ -27,7 +27,7 @@ public class UserContoller {
     private final BasketRepository basketRepository;
 
     @Autowired
-    public UserContoller(ProductRepository productRepository, ClientRepository clientRepository, ClientService clientService, SellerRepository sellerRepository, ImageRepository imageRepository, BasketRepository basketRepository) {
+    public UserController(ProductRepository productRepository, ClientRepository clientRepository, ClientService clientService, SellerRepository sellerRepository, ImageRepository imageRepository, BasketRepository basketRepository) {
         this.productRepository = productRepository;
         this.clientRepository = clientRepository;
         this.clientService = clientService;
@@ -77,6 +77,7 @@ public class UserContoller {
         basket.setClient(getCurrentClient());
         basket.setProduct(product);
         basketRepository.save(basket);
+
         return "redirect:/products/" + id;
     }
 
@@ -96,6 +97,16 @@ public class UserContoller {
     public String deleteFromBasket(@PathVariable("id") int id){
         basketRepository.deleteById(id);
         return "redirect:/basket";
+    }
+
+    @GetMapping("/seller/{id}")
+    public String showSeller(@PathVariable("id") int id,
+                             Model model){
+        Seller seller = sellerRepository.findById(id)
+                .orElseThrow(()->new RuntimeException("seller with id " + id + " not found"));
+        model.addAttribute("seller", seller);
+
+        return "seller";
     }
 
     private Client getCurrentClient(){

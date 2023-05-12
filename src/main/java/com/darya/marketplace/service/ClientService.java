@@ -6,6 +6,7 @@ import com.darya.marketplace.repository.BasketRepository;
 import com.darya.marketplace.repository.ClientRepository;
 import com.darya.marketplace.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -16,17 +17,21 @@ public class ClientService {
     private final ClientRepository clientRepository;
     private final ProductRepository productRepository;
     private final BasketRepository basketRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public ClientService(ClientRepository clientRepository,
                          ProductRepository productRepository,
-                         BasketRepository basketRepository){
+                         BasketRepository basketRepository,
+                         PasswordEncoder passwordEncoder){
         this.clientRepository = clientRepository;
         this.productRepository = productRepository;
         this.basketRepository = basketRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Client registration(Client client){
+        client.setPassword(passwordEncoder.encode(client.getPassword()));
         return clientRepository.save(client);
     }
 
