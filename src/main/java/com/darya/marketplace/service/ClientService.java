@@ -2,6 +2,7 @@ package com.darya.marketplace.service;
 
 import com.darya.marketplace.entity.Basket;
 import com.darya.marketplace.entity.Client;
+import com.darya.marketplace.entity.enums.ERole;
 import com.darya.marketplace.repository.BasketRepository;
 import com.darya.marketplace.repository.ClientRepository;
 import com.darya.marketplace.repository.ProductRepository;
@@ -32,6 +33,7 @@ public class ClientService {
 
     public Client registration(Client client){
         client.setPassword(passwordEncoder.encode(client.getPassword()));
+        client.getRoles().add(ERole.ROLE_USER);
         return clientRepository.save(client);
     }
 
