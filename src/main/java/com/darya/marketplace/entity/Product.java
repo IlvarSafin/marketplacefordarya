@@ -30,6 +30,8 @@ public class Product {
     private double price;
     @Column(name = "count")
     private int count;
+    @Column(name = "status")
+    private boolean status;
 
     @ManyToOne
     @JoinColumn(name = "seller_id", referencedColumnName = "id")

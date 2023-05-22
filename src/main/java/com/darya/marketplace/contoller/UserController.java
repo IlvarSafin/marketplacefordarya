@@ -17,6 +17,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Controller
 public class UserController {
     private final ProductRepository productRepository;
@@ -53,7 +58,15 @@ public class UserController {
 
     @GetMapping("/products")
     public String showProducts(Model model){
-        model.addAttribute("products", productRepository.findAll());
+        List<Product> products =  productRepository.findAllByStatus(true);
+        model.addAttribute("products", products);
+
+        Map<Integer, String> productBase64Images = new HashMap<>();
+        for(Product product : products){
+            productBase64Images.put(product.getId(), Base64.getEncoder().encodeToString(product.getImages().get(0).getImage()));
+        }
+        model.addAttribute("images", productBase64Images);
+
         return "products";
     }
 
@@ -61,9 +74,12 @@ public class UserController {
     public String showProduct(Model model,
                               @PathVariable("id")int id){
         Product product = productRepository.findById(id).orElseThrow(()-> new RuntimeException("product not found"));
+        if (!product.isStatus()){
+            throw new RuntimeException("product status false");
+        }
         Basket basket = new Basket();
         basket.setProduct(product);
-        basket.setCount(0);
+        basket.setCount(1);
 
         model.addAttribute("product", basket);
         return "product";
